@@ -5,9 +5,9 @@
 BASE_URL="https://pokeapi.co/api/v2/type"
 
 # Validar que se proporcione un argumento
-if [ "$#" -ne 1 ]; then
-	echo "Uso: $0 fire"
-	exit 1
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+        echo "Uso: $0 fire [cantidad]"
+        exit 1
 fi
 
 # Convertir el argumento a minúsculas
@@ -17,6 +17,14 @@ TIPO="${1,,}"
 if [ "$TIPO" != "fire" ]; then
 	echo "Error: Este programa solo consulta el tipo fire."
 	exit 1
+fi
+
+CANTIDAD="${2:-10}"
+
+# Validar que sea un número del 1 al 20
+if ! [[ "$CANTIDAD" =~ ^([1-9]|1[0-9]|20)$ ]]; then
+        echo "Error: La cantidad debe ser un número entre 1 y 20."
+        exit 1
 fi
 
 # Realizar la petición a la API
@@ -54,7 +62,7 @@ echo "       POKÉDEX - FUEGO"
 echo "=============================="
 echo "Tipo consultado: $TIPO"
 echo ""
-echo "Primeros 10 Pokémon:"
+echo "Primeros $CANTIDAD Pokémon:"
 echo "------------------------------"
 
 # Extraer y mostrar los primeros 10 Pokémon
@@ -64,7 +72,7 @@ while IFS= read -r POKEMON; do
 	printf '%d. %s\n' "$CONTADOR" "$POKEMON"
 	CONTADOR=$((CONTADOR + 1))
 done < <(
-	printf '%s' "$JSON" | jq -r '.pokemon[:10][].pokemon.name'
+	printf '%s' "$JSON" | jq -r --argjson cantidad "$CANTIDAD" '.pokemon[:$cantidad][].pokemon.name'
 )
 
 echo ""
