@@ -16,7 +16,7 @@ for comando in curl jq; do
         exit 1
     fi
 done
-
+# Preparar la consulta del Pokémon solicitado
 # Consultar PokeAPI
 url="https://pokeapi.co/api/v2/pokemon/$pokemon"
 
